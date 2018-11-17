@@ -1,2 +1,2 @@
 # redis-head
-a chrome extension for redis admin
+a google chrome extension for redis manager

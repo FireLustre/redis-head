@@ -1,17 +1,31 @@
 {
     "manifest_version": 2,
     "name": "Redis Head",
-    "description": "My first Chrome App.",
-    "version": "0.2",
-    "app": {
-        "background": {
-            "scripts": [
-                "background.js"
-            ]
-        }
-    },
+    "description": "Redis Manager.",
+    "version": "0.3",
     "icons": {
         "16": "images/redis-head-16.png",
         "128": "images/redis-head-128.png"
-    }
+    },
+    "app": {
+        "background": {
+            "scripts": [
+                "./js/tcp.js",
+                "./js/background.js"
+            ]
+        }
+    },
+    "sockets": {
+        "tcp": {
+            "connect": "*"
+        },
+        "tcpServer": {
+            "listen": ":1117"
+        }
+    },
+    "permissions": [
+        "storage",
+        "http://*/*",
+        "https://*/*"
+    ]
 }
