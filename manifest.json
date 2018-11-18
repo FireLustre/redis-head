@@ -10,7 +10,6 @@
     "app": {
         "background": {
             "scripts": [
-                "./js/tcp.js",
                 "./js/background.js"
             ]
         }
