@@ -6,3 +6,15 @@ chrome.app.runtime.onLaunched.addListener(function () {
         }
     });
 });
+
+var socketOption = {
+    persistent: true,
+    name: 'tcpSocket',
+    bufferSize: 4096 // 缓冲区大小
+};
+
+var tcpSocket = new tcp();
+tcpSocket.init(function () {
+    console.log("test")
+    //We'll do something after tcp socket init later
+});
