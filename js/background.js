@@ -14,7 +14,13 @@ var socketOption = {
 };
 
 var tcpSocket = new tcp();
+
 tcpSocket.init(function () {
-    console.log("test")
+
     //We'll do something after tcp socket init later
+});
+
+// 监听来自content-script的消息
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    sendResponse('我是后台，我已收到你的消息了：' + JSON.stringify(request));
 });
