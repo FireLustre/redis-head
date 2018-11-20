@@ -20,34 +20,27 @@ function tcp() {
         }.bind(this),
 
         // 连接
-        this.connect = function (address, port) {
-            port = parseInt(port)
-            console.log(address, port, this.socketId, _tcp);
-            _tcp.connect(this.socketId, address, port, function (info) {
-                console.log('connect info:', info);
-                _tcp.onReceive.addListener(function (info) {
-                    console.log('success', info);
-                    if (info.socketId == this.socketId) {
-                        this.receive(info);
-                    }
-                }.bind(this));
-                _tcp.onReceiveError.addListener(function (info) {
-                    console.log('err', info);
-                    if (info.socketId == this.socketId) {
-                        this.error(info.resultCode);
-                    }
-                }.bind(this));
+        this.connect = function (address, port, callback) {
+            _tcp.connect(this.socketId, address, parseInt(port), function (resultCode) {
+                callback(resultCode);
             }.bind(this));
         }.bind(this),
 
         // 发送
         this.send = function (data, callback) {
-            _tcp.send(this.socketId, data, callback);
+            _tcp.send(this.socketId, data, function (info1) {
+                console.log('info1', info1);
+                _tcp.onReceive.addListener(function (info2) {
+                    console.log('info2', info2);
+                }.bind(this));
+            }.bind(this));
         }.bind(this),
 
         // 接收
-        this.receive = function (info) {
-            console.log('Received data.', info);
+        this.receive = function (callback) {
+            _tcp.onReceive.addListener(function (info) {
+                callback(info);
+            })
         },
 
         // 阻止和解除阻止socket接收数据
@@ -61,8 +54,7 @@ function tcp() {
             _tcp.setKeepAlive(this.socketId, enable, delay, function (code) {
                 if (code < 0) {
                     this.error(code);
-                }
-                else {
+                } else {
                     callback();
                 }
             }.bind(this));
