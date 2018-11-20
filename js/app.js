@@ -1,6 +1,6 @@
 console.log('----------------start app js---------------------');
 
-var content = 'some thing';
+const JS_EOL = `\r\n`;
 
 var socketOption = {
     persistent: true,
@@ -15,7 +15,7 @@ tcpSocket.init(function () {
 });
 
 tcpSocket.receive(function (data) {
-    console.log("receive data", data);
+    $("#search-result").html(ab2str(data.data))
 });
 
 // 连接
@@ -39,11 +39,12 @@ $(".connect").click(function () {
 // 命令操作
 // 查询
 $(".search").click(function () {
-    var redisProtocolArray = encode("set test 123");
-    var buf = str2ab(redisProtocolArray.join(`\r\n`));
+    var teminal = $('#teminal').val();
 
-    tcpSocket.send(buf, function (data) {
-
+    var redisProtocolArray = encode(teminal);
+    var buf = str2ab(redisProtocolArray.join(JS_EOL) + JS_EOL);
+    tcpSocket.send(buf, function (err) {
+        console.log('send err', err);
     })
 });
 

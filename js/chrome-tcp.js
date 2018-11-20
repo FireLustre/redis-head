@@ -27,12 +27,11 @@ function tcp() {
         }.bind(this),
 
         // 发送
-        this.send = function (data, callback) {
-            _tcp.send(this.socketId, data, function (info1) {
-                console.log('info1', info1);
-                _tcp.onReceive.addListener(function (info2) {
-                    console.log('info2', info2);
-                }.bind(this));
+        this.send = function (data, err) {
+            _tcp.send(this.socketId, data, function (sendResult) {
+                if (sendResult.resultCode < 0) {
+                    err(sendResult)
+                }
             }.bind(this));
         }.bind(this),
 
