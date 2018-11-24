@@ -10,44 +10,56 @@ var socketOption = {
 
 var tcpSocket = new tcp();
 
-tcpSocket.init(function () {
-    console.log('tcp socket init, socketId =', tcpSocket.socketId);
-});
-
-tcpSocket.receive(function (data) {
-    $("#search-result").html(ab2str(data.data))
-});
-
 // 连接
 $(".connect").click(function () {
-    $(this).hide();
-    var address = $("#address").val();
-    var port = $('#port').val();
+    $(".connect").toggle();
+    $(".disconnect").toggle();
+    tcpSocket.init(function () {
+        console.log('socket create, socketId =', tcpSocket.socketId);
 
-    $('#content').html('连接中......');
 
-    tcpSocket.connect(address, port, function (code) {
         // 底层网络调用返回的结果代码，负值表示错误
-        if (code < 0) {
-            $('#content').html('连接失败');
-        } else {
-            $('#content').html('连接成功');
-        }
+        var address = $("#address").val();
+        var port = $('#port').val();
+        tcpSocket.connect(address, port, function (code) {
+            console.log("tcp start")
+        });
     });
+});
+
+// 断开连接
+$(".disconnect").click(function () {
+    $(".connect").toggle();
+    $(".disconnect").toggle();
+    tcpSocket.close(function () {
+        console.log('socket close, socketId =', tcpSocket.socketId);
+    })
 });
 
 // 命令操作
 // 查询
 $(".search").click(function () {
+    var address = $("#address").val();
+    var port = $('#port').val();
+
     var teminal = $('#teminal').val();
 
     var redisProtocolArray = encode(teminal);
     var buf = str2ab(redisProtocolArray.join(JS_EOL) + JS_EOL);
-    tcpSocket.send(buf, function (err) {
-        console.log('send err', err);
-    })
-});
 
+    tcpSocket.send(buf, function (sentResult) {
+
+        if (sentResult.resultCode != 0) {
+            console.log('send err', err);
+        }
+    });
+    // tcpSocket.disconnect(function (code) {
+    //     console.log("tcp end")
+    // });
+});
+tcpSocket.receive(function (data) {
+    $("#search-result").html(ab2str(data.data))
+});
 function ab2str(buf) {
     return String.fromCharCode.apply(null, new Int8Array(buf));
 }

@@ -27,20 +27,19 @@ function tcp() {
         }.bind(this),
 
         // 发送
-        this.send = function (data, err) {
-            _tcp.send(this.socketId, data, function (sendResult) {
-                if (sendResult.resultCode < 0) {
-                    err(sendResult)
-                }
+        this.send = function (data, onSentCallback) {
+            _tcp.send(this.socketId, data, function (sentResult) {
+                onSentCallback(sentResult);
             }.bind(this));
         }.bind(this),
 
         // 接收
         this.receive = function (callback) {
             _tcp.onReceive.addListener(function (info) {
+                console.log("receive", info)
                 callback(info);
-            })
-        },
+            });
+        }.bind(this),
 
         // 阻止和解除阻止socket接收数据
         // 当一个socket被阻止后，将不会触发消息接收事件，解除阻止后将恢复正常
