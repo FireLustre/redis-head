@@ -10,6 +10,9 @@ var socketOption = {
 
 var tcpSocket = new tcp();
 
+var address = $("#address").val();
+var port = $('#port').val();
+
 // 连接
 $(".connect").click(function () {
     $(".connect").toggle();
@@ -17,12 +20,14 @@ $(".connect").click(function () {
     tcpSocket.init(function () {
         console.log('socket create, socketId =', tcpSocket.socketId);
 
-
-        // 底层网络调用返回的结果代码，负值表示错误
-        var address = $("#address").val();
-        var port = $('#port').val();
         tcpSocket.connect(address, port, function (code) {
-            console.log("tcp start")
+            console.log("tcp start", code);
+        });
+
+        tcpSocket.receive(function (data) {
+            $("#search-result").html(ab2str(data.data));
+        }, function (data) {
+            // $("#search-result").html(data)
         });
     });
 });
@@ -31,35 +36,32 @@ $(".connect").click(function () {
 $(".disconnect").click(function () {
     $(".connect").toggle();
     $(".disconnect").toggle();
+
+    tcpSocket.disconnect(function () {
+        console.log("断开连接", data)
+    });
+
     tcpSocket.close(function () {
         console.log('socket close, socketId =', tcpSocket.socketId);
-    })
+    });
 });
 
 // 命令操作
 // 查询
 $(".search").click(function () {
-    var address = $("#address").val();
-    var port = $('#port').val();
 
     var teminal = $('#teminal').val();
-
     var redisProtocolArray = encode(teminal);
     var buf = str2ab(redisProtocolArray.join(JS_EOL) + JS_EOL);
 
     tcpSocket.send(buf, function (sentResult) {
-
+        // 底层网络调用返回的结果代码，负值表示错误
         if (sentResult.resultCode != 0) {
             console.log('send err', err);
         }
     });
-    // tcpSocket.disconnect(function (code) {
-    //     console.log("tcp end")
-    // });
 });
-tcpSocket.receive(function (data) {
-    $("#search-result").html(ab2str(data.data))
-});
+
 function ab2str(buf) {
     return String.fromCharCode.apply(null, new Int8Array(buf));
 }

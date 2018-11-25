@@ -34,10 +34,14 @@ function tcp() {
         }.bind(this),
 
         // 接收
-        this.receive = function (callback) {
+        this.receive = function (callback, errCallBack) {
             _tcp.onReceive.addListener(function (info) {
                 console.log("receive", info)
                 callback(info);
+            });
+            _tcp.onReceiveError.addListener(function (info) {
+                console.log("receive err", info)
+                errCallBack(info);
             });
         }.bind(this),
 
