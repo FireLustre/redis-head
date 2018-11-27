@@ -19,25 +19,16 @@
                 <input type="text" id="address" name="address" value="127.0.0.1" /><br />
                 <label for="port">port</label>
                 <input type="text" id="port" name="port" value="6379" />
-                <p>
-                    <a class="btn btn-info connect">连接</a>
-                    <a class="btn btn-warning disconnect hide">断开连接</a>
-                </p>
-            </form>
-        </div>
-        <div class="col-xs-6">
-            <form action="#">
                 <label for="teminal">执行命令</label>
                 <input type="text" id="teminal" name="teminal" value="PING" /><br />
                 <p>
                     <a class="btn btn-success search">执行</a>
                 </p>
+                <p>查询信息：</p>
+                <div id="search-result">
+
+                </div>
             </form>
-
-            <p>查询信息：</p>
-            <div id="search-result">
-
-            </div>
         </div>
     </div>
     <script type="text/javascript" src="js/jquery-3.0.0.min.js"></script>

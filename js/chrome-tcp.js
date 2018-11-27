@@ -21,34 +21,48 @@ function tcp() {
 
         // 连接
         this.connect = function (address, port, callback) {
-            _tcp.connect(this.socketId, address, parseInt(port), function (resultCode) {
-                callback(resultCode);
+            _tcp.connect(this.socketId, address, parseInt(port), function () {
+                console.log("connect");
             }.bind(this));
         }.bind(this),
 
         // 发送
         this.send = function (data, onSentCallback) {
+            console.log('tcp socket info', _tcp)
             _tcp.send(this.socketId, data, function (sentResult) {
                 onSentCallback(sentResult);
             }.bind(this));
         }.bind(this),
 
-        // 接收
-        this.receive = function (callback, errCallBack) {
+        this.onReceive = function (callback) {
             _tcp.onReceive.addListener(function (info) {
-                console.log("receive", info)
-                callback(info);
-            });
-            _tcp.onReceiveError.addListener(function (info) {
-                console.log("receive err", info)
-                errCallBack(info);
-            });
+                this.receive(info);
+                if (info.socketId == this.socketId) {
+                    callback(info);
+                }
+            }.bind(this));
+
         }.bind(this),
+
+        this.onReceiveErr = function () {
+            _tcp.onReceiveError.addListener(function (info) {
+                if (info.socketId == this.socketId) {
+                    this.pause(false);
+                    this.error(info.resultCode);
+                }
+            }.bind(this));
+        }.bind(this),
+
+        this.receive = function (info) {
+            console.log('Received data.');
+        },
 
         // 阻止和解除阻止socket接收数据
         // 当一个socket被阻止后，将不会触发消息接收事件，解除阻止后将恢复正常
         this.pause = function (isPaused, callback) {
-            _tcp.setPaused(this.socketId, isPaused, callback);
+            _tcp.setPaused(this.socketId, isPaused, function () {
+                console.log("isPaused");
+            });
         }.bind(this),
 
         // 长连接
