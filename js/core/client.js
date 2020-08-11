@@ -10,105 +10,105 @@ var socketOption = {
 	bufferSize: BUFFER_SIZE
 };
 
-var redis = function (host, port) {
+var redis = function (host, port, password) {
 	this.host = host,
-		this.port = 6379,
-		this.tcpSocket = {},
+	this.port = port,
+	this.tcpSocket = {},
 
-		// create an redis tcp client
-		this.init = function (callBack, errCallBack) {
-			this.tcpSocket = new tcp();
-			this.tcpSocket.option = socketOption;
-			this.tcpSocket.init(function () {
-				console.log('create socket, socket_id =', this.tcpSocket.socketId);
-			}.bind(this));
+	// create an redis tcp client
+	this.init = function (callBack, errCallBack) {
+		this.tcpSocket = new tcp();
+		this.tcpSocket.option = socketOption;
+		this.tcpSocket.init(function () {
+			console.log('create socket, socket_id =', this.tcpSocket.socketId);
+		}.bind(this));
 
-			// register listen events
-			// listen events include success event and err event
-			this.tcpSocket.onReceive(function (data) {
-				var dataStr = ab2str(data.data);
-				if (data.data.byteLength >= BUFFER_SIZE) {
-					receivedAllData = receivedAllData + dataStr
-				} else {
-					receivedAllData = receivedAllData + dataStr
-					isEndReceive = true
-				}
+		// register listen events
+		// listen events include success event and err event
+		this.tcpSocket.onReceive(function (data) {
+			var dataStr = ab2str(data.data);
+			if (data.data.byteLength >= BUFFER_SIZE) {
+				receivedAllData = receivedAllData + dataStr
+			} else {
+				receivedAllData = receivedAllData + dataStr
+				isEndReceive = true
+			}
 
-				// 结束接收
-				if (isEndReceive) {
-					callBack(parseReply(receivedAllData));
-					this.tcpSocket.disconnect(function () {
-						console.log('disconnect')
-					});
-
-					// 重置“侦察兵”数据
-					isEndReceive = false;
-					receivedAllData = '';
-				}
-			}.bind(this));
-			this.tcpSocket.onReceiveErr(function () {
-				errCallBack();
+			// 结束接收
+			if (isEndReceive) {
+				callBack(parseReply(receivedAllData));
 				this.tcpSocket.disconnect(function () {
 					console.log('disconnect')
 				});
-			}.bind(this));
-		}.bind(this),
 
-		// 'ping' to redis
-		// success to reply 'PONG'
-		this.ping = function () {
-			this.exec(`PING`);
-		},
-
-		// get all keys
-		this.keys = function () {
-			this.exec(`KEYS *`);
-		},
-
-		// get the type of key
-		this.type = function (key) {
-			this.exec(`TYPE ` + key)
-		},
-
-		// get the value of key
-		this.get = function (key) {
-			this.exec(`GET ` + key)
-		},
-
-		// set key value
-		this.set = function (key, value) {
-			this.exec(`SET ` + key + ` ` + value)
-		},
-
-		// set key expire time
-		this.expire = function () {
-
-		},
-
-		// delete key
-		this.del = function (key) {
-			this.exec(`DEL ` + key)
-		},
-
-		// exec redis teminal
-		this.exec = function (teminal) {
-			this.tcpSocket.connect(this.host, this.port);
-
-			var redisProtocolArray = encode(teminal);
-			var buf = str2ab(redisProtocolArray.join(JS_EOL) + JS_EOL);
-
-			this.tcpSocket.send(buf, function (sentResult) {
-				if (sentResult.resultCode != 0) {
-					console.log('send err', sentResult);
-				}
+				// 重置“侦察兵”数据
+				isEndReceive = false;
+				receivedAllData = '';
+			}
+		}.bind(this));
+		this.tcpSocket.onReceiveErr(function () {
+			errCallBack();
+			this.tcpSocket.disconnect(function () {
+				console.log('disconnect')
 			});
-		},
+		}.bind(this));
+	}.bind(this),
 
-		this.destroy = function () {
-			this.tcpSocket.close(function () {
-				console.log("关闭socket")
-			})
-		}
+	// 'ping' to redis
+	// success to reply 'PONG'
+	this.ping = function () {
+		this.exec(`PING`);
+	},
+
+	// get all keys
+	this.keys = function () {
+		this.exec(`KEYS *`);
+	},
+
+	// get the type of key
+	this.type = function (key) {
+		this.exec(`TYPE ` + key)
+	},
+
+	// get the value of key
+	this.get = function (key) {
+		this.exec(`GET ` + key)
+	},
+
+	// set key value
+	this.set = function (key, value) {
+		this.exec(`SET ` + key + ` ` + value)
+	},
+
+	// set key expire time
+	this.expire = function () {
+
+	},
+
+	// delete key
+	this.del = function (key) {
+		this.exec(`DEL ` + key)
+	},
+
+	// exec redis teminal
+	this.exec = function (teminal) {
+		this.tcpSocket.connect(this.host, this.port, this.password);
+
+		var redisProtocolArray = encode(teminal);
+		var buf = str2ab(redisProtocolArray.join(JS_EOL) + JS_EOL);
+
+		this.tcpSocket.send(buf, function (sentResult) {
+			if (sentResult.resultCode != 0) {
+				console.log('send err', sentResult);
+			}
+		});
+	},
+
+	this.destroy = function () {
+		this.tcpSocket.close(function () {
+			console.log("关闭socket")
+		})
+	}
 }
 
 function ab2str(buf) {
