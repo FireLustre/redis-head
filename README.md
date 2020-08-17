@@ -1,22 +1,21 @@
+![logo](/Users/lustrewang/Workspace/Others/redis-head/logo.png)
+
 # redis-head
-a google chrome extension for redis manager
 
-## 采坑
+![screenshot](/Users/lustrewang/Workspace/Others/redis-head/screenshot.jpg)
 
-- background.js 中console.log打印无效
-- 修改background.js，必须在`chrome://extensions`页面中刷新扩展，调试页面刷新无效
-
-# 使用tcpdump
-
-查看网卡
-> tcpdump -D
-
-查看请求信息 
-> sudo tcpdump tcp -i 8  port 6379
+It is a google chrome extension for redis manager.
 
 
-### 参考文档及资料
-- https://developer.chrome.com
-- http://redisdoc.com/topic/protocol.html
-- https://github.com/sxei/chrome-plugin-demo
-- https://crxdoc-zh.appspot.com/apps/sockets_tcp
+
+## Installation
+
+### Install through Chrome Web Store
+
+[![https://chrome.google.com/webstore/detail/json-viewer/gbmdgpbipfallnflgajpaliibnhdgobh](https://raw.githubusercontent.com/tulios/json-viewer/master/tryitnow.png)](https://chrome.google.com/webstore/detail/json-viewer/gbmdgpbipfallnflgajpaliibnhdgobh)
+
+
+
+## License
+
+See [LICENSE](https://github.com/tulios/json-viewer/blob/master/LICENSE) for more details.
