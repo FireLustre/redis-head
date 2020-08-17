@@ -9,7 +9,7 @@
 
 <body>
     <div class="container">
-        <div class="col-md-auto page-connect" style="margin-top: 100px; display: none;">
+        <div id="page-connect" class="col-md-auto" style="margin-top: 100px;">
             <h1 class="text-center">Redis Head</h1>
             <form>
                 <div class="form-group row">
@@ -34,17 +34,27 @@
             <button type="submit" class="btn btn-primary connect" style="float: right;">Connect</button>
         </div>
 
+        <!-- page main -->
+        <div id="page-main" class="visible" style="margin:10px; display: none;">
 
-        <div class="visible page-main">
+            <div class="jumbotron jumbotron-fluid">
+                <div class="container">
+                  <p></p>
+                </div>
+            </div>
+
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
                   <span class="input-group-text" id="basic-addon1">$</span>
                 </div>
-                <input type="text" class="form-control" placeholder="GET KEY_NAME " aria-label="Username" aria-describedby="basic-addon1">
-              </div>
+                <input type="text" class="form-control" placeholder="GET KEY_NAME" id="teminal" aria-label="teminal" aria-describedby="basic-addon1">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary query" type="button" id="button-addon2">Enter</button>
+                </div>
+            </div>
+
         </div>
     </div>
-
 </body>
 <script type="text/javascript" src="lib/jquery-3.0.0.min.js"></script>
 <script type="text/javascript" src="src/core/protocol-request.js"></script>

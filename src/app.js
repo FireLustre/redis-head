@@ -3,6 +3,7 @@ $(function() {
         host: '127.0.0.1',
         port: 6379,
         password: '',
+        client: null,
         isConnect: false,
     };
     
@@ -16,17 +17,17 @@ $(function() {
 
         // TODO connect loading
 
-        var client = new redis(APP.host, APP.port, APP.password);
-        client.init(APP.SuccessCallBack, )
+        APP.client = new redis(APP.host, APP.port, APP.password);
+        APP.client.init(APP.SuccessCallBack, )
     };
 
     
     APP.SuccessCallBack = function(data) {
+        // toggle to main page
         if (!APP.isConnect && data === 'PONG') {
-            APP.isConnect = true;
             console.log("connect success.");
-
-            // TODO jump to main page
+            APP.isConnect = true;
+            APP.ShowMainPage();
             return;
         }
         console.log('redis back data =>', data)
@@ -34,11 +35,26 @@ $(function() {
 
     APP.ErrCallBack = function() {
         console.log("something err.")
-    }
+    };
 
+    APP.Query = function(teminal) {
+        console.log("123");
+        APP.client.exec(teminal);
+    };
+
+    APP.ShowMainPage = function() {
+        $("#page-main").show();
+        $("#page-connect").hide();
+    };
 
     // register the connect event
     $('.connect').click(function() {
         APP.Connect();
+    });
+
+    // register the query event
+    $('.query').click(function() {
+        let teminal = $("#teminal").val();
+        APP.Query(teminal);
     });
 })
