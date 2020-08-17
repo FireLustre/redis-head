@@ -2,15 +2,15 @@
     "manifest_version": 2,
     "name": "Redis Head",
     "description": "Redis Manager.",
-    "version": "0.4",
+    "version": "0.3",
     "icons": {
-        "16": "images/redis-head-16.png",
-        "128": "images/redis-head-128.png"
+        "16": "resouces/icons/redis-head-16.png",
+        "128": "resouces/icons/redis-head-128.png"
     },
     "app": {
         "background": {
             "scripts": [
-                "./js/background.js"
+                "src/background.js"
             ]
         }
     },

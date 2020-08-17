@@ -9,7 +9,7 @@
 
 <body>
     <div class="container">
-        <div class="col-md-auto page-connect" style="margin-top: 100px;">
+        <div class="col-md-auto page-connect" style="margin-top: 100px; display: none;">
             <h1 class="text-center">Redis Head</h1>
             <form>
                 <div class="form-group row">
@@ -35,9 +35,14 @@
         </div>
 
 
-        <!-- <div class="visible page-main">
-            
-        </div> -->
+        <div class="visible page-main">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="basic-addon1">$</span>
+                </div>
+                <input type="text" class="form-control" placeholder="GET KEY_NAME " aria-label="Username" aria-describedby="basic-addon1">
+              </div>
+        </div>
     </div>
 
 </body>
