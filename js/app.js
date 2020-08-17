@@ -1,9 +1,13 @@
-var redisClient = new redis('127.0.0.1', 6379)
+var APP = {
+    isConnect: false,
+};
 
-redisClient.init(function (data) {
-    console.log('redis back data', data)
+var client = new redis('47.114.63.189', 6380, '');
+client.init(function (data) {
+    console.log('redis back data =>', data)
 })
 
+
 $(".search").click(function () {
-    redisClient.keys();
+    client.ping();
 });

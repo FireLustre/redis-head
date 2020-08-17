@@ -27,7 +27,15 @@ function parseBulk(parser) {
 // type of array
 // return an array of result
 function parseMultiBulk(parser) {
-    console.log("multi bulk", parser)
+    let len = parser[0],
+     values = [],
+     offset = 0;
+     
+    for (let index = 0; index < len; index++) {
+        offset += 2;
+        values.push(parser[offset]);
+    }
+    console.log("multi bulk", values)
 }
 
 function handleError(parser, type) {
@@ -43,6 +51,7 @@ function handleError(parser, type) {
  * error reply:      -
  */
 function parserType(parser, type) {
+    console.log("parser=>", parser)
     switch (type) {
         case '$':
             return parseBulk(parser)

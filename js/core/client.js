@@ -1,14 +1,22 @@
-const JS_EOL = `\r\n`;   // 换行符标记
-const BUFFER_SIZE = 4096; // socket缓冲区大小
+const 
+	JS_EOL = `\r\n`,
+	DELIMITER = ` `,
 
-var receivedAllData = '';
-var isEndReceive = false;
+	BUFFER_SIZE = 4096, // socket buffer size
 
-var socketOption = {
-	persistent: true,
-	name: 'redis_tcp_socket',
-	bufferSize: BUFFER_SIZE
-};
+	OPS_PING = 'PING',
+	OPS_INFO = 'INFO',
+	OPS_TYPE = 'TYPE',
+	OPS_SCAN = 'SCAN',
+	OPS_GET  = 'GET',
+	OPS_SET  = 'SET',
+	OPS_DEL  = 'DEL',
+	OPS_EXPIRE  = 'EXPIRE';
+	
+
+var 
+	receivedAllData = '',
+	isEndReceive = false;
 
 var redis = function (host, port, password) {
 	this.host = host,
@@ -18,7 +26,11 @@ var redis = function (host, port, password) {
 	// create an redis tcp client
 	this.init = function (callBack, errCallBack) {
 		this.tcpSocket = new tcp();
-		this.tcpSocket.option = socketOption;
+		this.tcpSocket.option = {
+			persistent: true,
+			name: 'redis_tcp_socket',
+			bufferSize: BUFFER_SIZE
+		};
 		this.tcpSocket.init(function () {
 			console.log('create socket, socket_id =', this.tcpSocket.socketId);
 		}.bind(this));
@@ -34,74 +46,89 @@ var redis = function (host, port, password) {
 				isEndReceive = true
 			}
 
-			// 结束接收
+			// check is received all
 			if (isEndReceive) {
 				callBack(parseReply(receivedAllData));
 				this.tcpSocket.disconnect(function () {
 					console.log('disconnect')
 				});
 
-				// 重置“侦察兵”数据
+				// reset receive flag
 				isEndReceive = false;
 				receivedAllData = '';
 			}
 		}.bind(this));
+
+		// listen err event
 		this.tcpSocket.onReceiveErr(function () {
 			errCallBack();
-			this.tcpSocket.disconnect(function () {
-				console.log('disconnect')
-			});
+			// this.tcpSocket.disconnect(function () {
+			// 	console.log('disconnect')
+			// });
 		}.bind(this));
+
+		return this;
 	}.bind(this),
+
+	this.connect = function(callBack) {
+		console.log("start connect =>", this.tcpSocket)
+		this.tcpSocket.connect(this.host, this.port, callBack);
+		// this.tcpSocket.keepAlive(true, 300, function() {
+
+		// });
+		console.log("connected =>", this.tcpSocket)
+	},
 
 	// 'ping' to redis
 	// success to reply 'PONG'
 	this.ping = function () {
-		this.exec(`PING`);
+		this.exec(OPS_PING);
 	},
 
-	// get all keys
-	this.keys = function () {
-		this.exec(`KEYS *`);
-	},
+	// get all keys, bad ops
+	// this.keys = function () {
+	// 	this.exec(`KEYS *`);
+	// },
 
 	// get the type of key
 	this.type = function (key) {
-		this.exec(`TYPE ` + key)
+		this.exec(makeTeminal(OPS_TYPE, key))
 	},
 
 	// get the value of key
 	this.get = function (key) {
-		this.exec(`GET ` + key)
+		this.exec(makeTeminal(OPS_GET, key))
 	},
 
 	// set key value
 	this.set = function (key, value) {
-		this.exec(`SET ` + key + ` ` + value)
+		this.exec(makeTeminal(OPS_SET, key, value))
 	},
 
 	// set key expire time
-	this.expire = function () {
-
+	this.expire = function (ttl) {
+		this.exec(makeTeminal(OPS_EXPIRE, key, ttl))
 	},
 
 	// delete key
 	this.del = function (key) {
-		this.exec(`DEL ` + key)
+		this.exec(makeTeminal(OPS_DEL, key))
 	},
 
 	// exec redis teminal
 	this.exec = function (teminal) {
-		this.tcpSocket.connect(this.host, this.port, this.password);
-
-		var redisProtocolArray = encode(teminal);
-		var buf = str2ab(redisProtocolArray.join(JS_EOL) + JS_EOL);
-
-		this.tcpSocket.send(buf, function (sentResult) {
-			if (sentResult.resultCode != 0) {
-				console.log('send err', sentResult);
-			}
+		this.connect(() => {
+			console.log("teminal exec");
+			var redisProtocolArray = encode(teminal);
+			var buf = str2ab(redisProtocolArray.join(JS_EOL) + JS_EOL);
+	
+			this.tcpSocket.send(buf, function (sentResult) {
+				if (sentResult.resultCode != 0) {
+					console.log('send err', sentResult);
+				}
+			});
 		});
+		
 	},
 
 	this.destroy = function () {
@@ -135,4 +162,10 @@ function concatenate(resultConstructor, ...arrays) {
 		offset += arr.length;
 	}
 	return result;
+}
+
+function makeTeminal(...args) {
+	return args.reduce((p, c) => {
+		return p + DELIMITER + c;
+	})
 }
