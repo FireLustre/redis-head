@@ -4,8 +4,8 @@
     "description": "Redis Manager.",
     "version": "0.3",
     "icons": {
-        "16": "resouces/icons/redis-head-16.png",
-        "128": "resouces/icons/redis-head-128.png"
+        "16": "resources/icons/redis-head-16.png",
+        "128": "resources/icons/redis-head-128.png"
     },
     "app": {
         "background": {
