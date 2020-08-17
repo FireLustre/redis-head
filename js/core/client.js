@@ -32,6 +32,8 @@ var redis = function (host, port, password) {
 			bufferSize: BUFFER_SIZE
 		};
 		this.tcpSocket.init(function () {
+			// send ping to make sure redis is connected
+			this.ping();
 			console.log('create socket, socket_id =', this.tcpSocket.socketId);
 		}.bind(this));
 
