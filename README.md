@@ -1,8 +1,8 @@
-![logo](/Users/lustrewang/Workspace/Others/redis-head/logo.png)
+![logo](./logo.png)
 
 # redis-head
 
-![screenshot](/Users/lustrewang/Workspace/Others/redis-head/screenshot.jpg)
+![screenshot](./screenshot.jpg)
 
 It is a google chrome extension for redis manager.
 
