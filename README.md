@@ -4,7 +4,7 @@
 
 ![screenshot](./screenshot.jpg)
 
-It is a google chrome extension for redis manager.
+It is a chrome extension application for Redis.
 
 
 
