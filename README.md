@@ -18,4 +18,4 @@ It is a chrome extension application for Redis.
 
 ## License
 
-See [LICENSE](https://github.com/tulios/json-viewer/blob/master/LICENSE) for more details.
+See [LICENSE](https://github.com/FireLustre/redis-head/master/LICENSE) for more details.
