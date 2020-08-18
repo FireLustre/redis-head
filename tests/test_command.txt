@@ -1,0 +1,6 @@
+set key1 123
+get key1
+set key2 abc
+get key2
+incr key3
+get key3

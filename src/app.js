@@ -13,8 +13,6 @@ $(function() {
         APP.port = $('input[name=port]').val();
         APP.password = $('input[name=password]').val();
 
-        console.log("try to connect =>", APP.host, APP.port, APP.password);
-
         // TODO connect loading
 
         APP.client = new redis(APP.host, APP.port, APP.password);
@@ -30,7 +28,8 @@ $(function() {
             APP.ShowMainPage();
             return;
         }
-        console.log('redis back data =>', data)
+        $(".query-result-pannel p").text(data);
+        console.log('redis back data =>', data);
     };
 
     APP.ErrCallBack = function() {
@@ -38,7 +37,6 @@ $(function() {
     };
 
     APP.Query = function(teminal) {
-        console.log("123");
         APP.client.exec(teminal);
     };
 

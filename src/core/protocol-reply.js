@@ -1,10 +1,16 @@
+const 
+    TYPE_ERR = 9999,
+    TYPE_NIL = -1,
+    TYPE_STR = 0,
+    TYPE_INTEGER = 1,
+    TYPE_ARRAY = 2;
+
 // type of status
 function parseStatus(parser) {
-    console.log("status", parser)
     return parser.pop();
 }
 
-// err msg info
+// TODO err msg info
 function parseError(parser) {
     console.log("error", parser)
     return parser.pop();
@@ -13,14 +19,16 @@ function parseError(parser) {
 // type of integer
 // return a integer of result
 function parseInteger(parser) {
-    console.log("integer", parser)
     return parseInt(parser.pop())
 }
 
 // type of string
 // return a string of result
 function parseBulk(parser) {
-    console.log("bulk", parser)
+    let len = parser.pop();
+    if (len === '-1') {
+        return null;
+    }
     return parser.pop();
 }
 
@@ -54,22 +62,25 @@ function parserType(parser, type) {
     console.log("parser=>", parser)
     switch (type) {
         case '$':
-            return parseBulk(parser)
+            let res = parseBulk(parser);
+            if (null === res) {
+                return TYPE_NIL, null;
+            }
+            return TYPE_STR, res;
         case '+':
-            return parseStatus(parser)
+            return TYPE_STR, parseStatus(parser)
         case '*':
-            return parseMultiBulk(parser)
+            return TYPE_ARRAY, parseMultiBulk(parser)
         case ':':
-            return parseInteger(parser)
+            return TYPE_INTEGER, parseInteger(parser)
         case '-':
-            return parseError(parser)
+            return TYPE_ERR, parseError(parser)
         default:
             return handleError(parser, type)
     }
 }
 
 function parseReply(data) {
-    console.log(data)
     var type = data.charAt(0);
     var foo = data.substr(1);
     parser = foo.split(`\r\n`);

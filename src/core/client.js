@@ -73,12 +73,7 @@ var redis = function (host, port, password) {
 	}.bind(this),
 
 	this.connect = function(callBack) {
-		console.log("start connect =>", this.tcpSocket)
 		this.tcpSocket.connect(this.host, this.port, callBack);
-		// this.tcpSocket.keepAlive(true, 300, function() {
-
-		// });
-		console.log("connected =>", this.tcpSocket)
 	},
 
 	// 'ping' to redis
