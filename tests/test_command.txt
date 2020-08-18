@@ -4,3 +4,4 @@ set key2 abc
 get key2
 incr key3
 get key3
+scan 10

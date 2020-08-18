@@ -22,13 +22,19 @@ $(function() {
     
     APP.SuccessCallBack = function(data) {
         // toggle to main page
-        if (!APP.isConnect && data === 'PONG') {
+        if (!APP.isConnect && data.data === 'PONG') {
             console.log("connect success.");
             APP.isConnect = true;
             APP.ShowMainPage();
             return;
         }
-        $(".query-result-pannel p").text(data);
+
+        if (data.type === TYPE_STRING || data.type === TYPE_STATUS) {
+            $(".query-result-pannel p").text(data.data);
+        } else if (data.type === TYPE_ARRAY) {
+            $(".query-result-pannel p").html(data.data.join("<br/>"));
+        }
+
         console.log('redis back data =>', data);
     };
 

@@ -1,9 +1,10 @@
 const 
     TYPE_ERR = 9999,
     TYPE_NIL = -1,
-    TYPE_STR = 0,
-    TYPE_INTEGER = 1,
-    TYPE_ARRAY = 2;
+    TYPE_STATUS = 0,
+    TYPE_STRING = 1,
+    TYPE_INTEGER = 2,
+    TYPE_ARRAY = 3;
 
 // type of status
 function parseStatus(parser) {
@@ -25,8 +26,7 @@ function parseInteger(parser) {
 // type of string
 // return a string of result
 function parseBulk(parser) {
-    let len = parser.pop();
-    if (len === '-1') {
+    if (parser.pop() === '-1') {
         return null;
     }
     return parser.pop();
@@ -43,7 +43,8 @@ function parseMultiBulk(parser) {
         offset += 2;
         values.push(parser[offset]);
     }
-    console.log("multi bulk", values)
+    console.log("multi bulk", values);
+    return values;
 }
 
 function handleError(parser, type) {
@@ -64,19 +65,20 @@ function parserType(parser, type) {
         case '$':
             let res = parseBulk(parser);
             if (null === res) {
-                return TYPE_NIL, null;
+                return ResponseReply(TYPE_NIL, null)
             }
-            return TYPE_STR, res;
+            return ResponseReply(TYPE_STRING, res);
         case '+':
-            return TYPE_STR, parseStatus(parser)
+            return ResponseReply(TYPE_STATUS, parseStatus(parser));
         case '*':
-            return TYPE_ARRAY, parseMultiBulk(parser)
+            return ResponseReply(TYPE_ARRAY, parseMultiBulk(parser));
         case ':':
-            return TYPE_INTEGER, parseInteger(parser)
+            return ResponseReply(TYPE_INTEGER, parseInteger(parser));
         case '-':
-            return TYPE_ERR, parseError(parser)
+            return ResponseReply(TYPE_ERR, parseError(parser));
         default:
-            return handleError(parser, type)
+            handleError(parser, type);
+            return null;
     }
 }
 
@@ -86,4 +88,8 @@ function parseReply(data) {
     parser = foo.split(`\r\n`);
     parser.pop();
     return parserType(parser, type);
+}
+
+function ResponseReply(type, data) {
+    return {"type": type, "data": data};
 }
