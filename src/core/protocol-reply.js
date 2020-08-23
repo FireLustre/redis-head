@@ -6,51 +6,6 @@ const
     TYPE_INTEGER = 2,
     TYPE_ARRAY = 3;
 
-// type of status
-function parseStatus(parser) {
-    return parser.pop();
-}
-
-// TODO err msg info
-function parseError(parser) {
-    console.log("error", parser)
-    return parser.pop();
-}
-
-// type of integer
-// return a integer of result
-function parseInteger(parser) {
-    return parseInt(parser.pop())
-}
-
-// type of string
-// return a string of result
-function parseBulk(parser) {
-    if (parser.pop() === '-1') {
-        return null;
-    }
-    return parser.pop();
-}
-
-// type of array
-// return an array of result
-function parseMultiBulk(parser) {
-    let len = parser[0],
-     values = [],
-     offset = 0;
-     
-    for (let index = 0; index < len; index++) {
-        offset += 2;
-        values.push(parser[offset]);
-    }
-    console.log("multi bulk", values);
-    return values;
-}
-
-function handleError(parser, type) {
-    console.log('Protocol error, got ' + JSON.stringify(type) + ' as reply type byte', parser)
-}
-
 /**
  *
  * bulk reply:       $
@@ -59,35 +14,55 @@ function handleError(parser, type) {
  * integer reply:    :
  * error reply:      -
  */
-function parserType(parser, type) {
-    console.log("parser=>", parser)
-    switch (type) {
+function parser(orgData) {
+    let t = orgData.shift();
+    switch (t.charAt()) {
+        // type of string
+        // return a string of result
         case '$':
-            let res = parseBulk(parser);
-            if (null === res) {
+            if (t.substr(1) === '-1') {
                 return ResponseReply(TYPE_NIL, null)
             }
-            return ResponseReply(TYPE_STRING, res);
+            return ResponseReply(TYPE_STRING, orgData.shift());
+
+        // type of array
+        // return an array of result
+        case '*': 
+            let tmp = [];
+            for (let index = 0; index < parseInt(t.substr(1)); index++) {
+                tmp.push(parser(orgData));
+            }
+            return ResponseReply(TYPE_ARRAY, tmp);
+
+        // type of status
         case '+':
-            return ResponseReply(TYPE_STATUS, parseStatus(parser));
-        case '*':
-            return ResponseReply(TYPE_ARRAY, parseMultiBulk(parser));
+            return ResponseReply(TYPE_STATUS, t.substr(1));
+
+        // type of integer
+        // return a integer of result
         case ':':
-            return ResponseReply(TYPE_INTEGER, parseInteger(parser));
+            return ResponseReply(TYPE_INTEGER, parseInt(t.substr(1), 10));
+        
+        // TODO err msg info
         case '-':
-            return ResponseReply(TYPE_ERR, parseError(parser));
+            return ResponseReply(TYPE_ERR, parseError(orgData));
         default:
-            handleError(parser, type);
+            console.log('Protocol error, got ' + JSON.stringify(orgData) + ' as reply type byte')
             return null;
     }
 }
 
 function parseReply(data) {
-    var type = data.charAt(0);
-    var foo = data.substr(1);
-    parser = foo.split(`\r\n`);
-    parser.pop();
-    return parserType(parser, type);
+    var foo = parser(data.split(`\r\n`));
+    console.log(foo);
+    return foo;
+    // parser = data.split(`\r\n`);
+    // console.log("parser=>", data)
+    // var type = data.charAt(0);
+    // var foo = data.substr(1);
+    
+    // parser.pop();
+    // return parserType(parser, type);
 }
 
 function ResponseReply(type, data) {
