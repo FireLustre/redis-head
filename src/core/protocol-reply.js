@@ -56,13 +56,6 @@ function parseReply(data) {
     var foo = parser(data.split(`\r\n`));
     console.log(foo);
     return foo;
-    // parser = data.split(`\r\n`);
-    // console.log("parser=>", data)
-    // var type = data.charAt(0);
-    // var foo = data.substr(1);
-    
-    // parser.pop();
-    // return parserType(parser, type);
 }
 
 function ResponseReply(type, data) {

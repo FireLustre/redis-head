@@ -21,6 +21,7 @@ var
 var redis = function (host, port, password) {
 	this.host = host,
 	this.port = port,
+	this.password = password,
 	this.tcpSocket = {},
 
 	// create an redis tcp client
@@ -89,28 +90,33 @@ var redis = function (host, port, password) {
 
 	// get the type of key
 	this.type = function (key) {
-		this.exec(makeTeminal(OPS_TYPE, key))
+		this.exec(makeTeminal(OPS_TYPE, key));
 	},
 
 	// get the value of key
 	this.get = function (key) {
-		this.exec(makeTeminal(OPS_GET, key))
+		this.exec(makeTeminal(OPS_GET, key));
 	},
 
 	// set key value
 	this.set = function (key, value) {
-		this.exec(makeTeminal(OPS_SET, key, value))
+		this.exec(makeTeminal(OPS_SET, key, value));
 	},
 
 	// set key expire time
 	this.expire = function (ttl) {
-		this.exec(makeTeminal(OPS_EXPIRE, key, ttl))
+		this.exec(makeTeminal(OPS_EXPIRE, key, ttl));
 	},
 
 	// delete key
 	this.del = function (key) {
-		this.exec(makeTeminal(OPS_DEL, key))
+		this.exec(makeTeminal(OPS_DEL, key));
 	},
+
+	// auth
+	this.auth = function() {
+		this.exec('auth', this.password);
+	}
 
 	// exec redis teminal
 	this.exec = function (teminal) {
