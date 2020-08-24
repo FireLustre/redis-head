@@ -45,7 +45,7 @@ function parser(orgData) {
         
         // TODO err msg info
         case '-':
-            return ResponseReply(TYPE_ERR, parseError(orgData));
+            return ResponseReply(TYPE_ERR, t.substr(1));
         default:
             console.log('Protocol error, got ' + JSON.stringify(orgData) + ' as reply type byte')
             return null;

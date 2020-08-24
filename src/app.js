@@ -21,8 +21,9 @@ $(function() {
 
     
     APP.SuccessCallBack = function(data) {
+        console.log("callback=>", data)
         // toggle to main page
-        if (!APP.isConnect && data.data === 'PONG') {
+        if (!APP.isConnect && (data.data === 'PONG' || data.data === 'OK')) {
             console.log("connect success.");
             APP.isConnect = true;
             APP.ShowMainPage();
@@ -43,7 +44,7 @@ $(function() {
     };
 
     APP.Query = function(teminal) {
-        APP.client.exec(teminal);
+        APP.client.exec(teminal, APP.isConnect);
     };
 
     APP.ShowMainPage = function() {

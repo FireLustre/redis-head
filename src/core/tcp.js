@@ -33,6 +33,7 @@ function tcp() {
 
     this.onReceive = function (callback) {
         _tcp.onReceive.addListener(function (info) {
+            console.log("tcp onReceive =>", info)
             this.receive(info);
             if (info.socketId == this.socketId) {
                 callback(info);

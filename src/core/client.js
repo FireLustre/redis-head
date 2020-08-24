@@ -34,13 +34,19 @@ var redis = function (host, port, password) {
 		};
 		this.tcpSocket.init(function () {
 			// send ping to make sure redis is connected
-			this.ping();
+			if (this.password !== "") {
+				console.log(this.password);
+				this.auth();
+			} else {
+				this.ping();
+			}
 			console.log('create socket, socket_id =', this.tcpSocket.socketId);
 		}.bind(this));
 
 		// register listen events
 		// listen events include success event and err event
 		this.tcpSocket.onReceive(function (data) {
+			console.log("receive data =>", data);
 			var dataStr = ab2str(data.data);
 			if (data.data.byteLength >= BUFFER_SIZE) {
 				receivedAllData = receivedAllData + dataStr
@@ -52,9 +58,9 @@ var redis = function (host, port, password) {
 			// check is received all
 			if (isEndReceive) {
 				callBack(parseReply(receivedAllData));
-				this.tcpSocket.disconnect(function () {
-					console.log('disconnect')
-				});
+				// this.tcpSocket.disconnect(function () {
+				// 	console.log('disconnect')
+				// });
 
 				// reset receive flag
 				isEndReceive = false;
@@ -115,13 +121,25 @@ var redis = function (host, port, password) {
 
 	// auth
 	this.auth = function() {
-		this.exec('auth', this.password);
+		this.exec(makeTeminal('auth', this.password));
 	}
 
 	// exec redis teminal
-	this.exec = function (teminal) {
+	this.exec = function (teminal, isConnect) {
+		if (isConnect) {
+			console.log("teminal exec =>", teminal);
+			var redisProtocolArray = encode(teminal);
+			var buf = str2ab(redisProtocolArray.join(JS_EOL) + JS_EOL);
+	
+			this.tcpSocket.send(buf, function (sentResult) {
+				if (sentResult.resultCode != 0) {
+					console.log('send err', sentResult);
+				}
+			});
+			return;
+		}
 		this.connect(() => {
-			console.log("teminal exec");
+			console.log("teminal exec =>", teminal);
 			var redisProtocolArray = encode(teminal);
 			var buf = str2ab(redisProtocolArray.join(JS_EOL) + JS_EOL);
 	
@@ -131,7 +149,6 @@ var redis = function (host, port, password) {
 				}
 			});
 		});
-		
 	},
 
 	this.destroy = function () {
