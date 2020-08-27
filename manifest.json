@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Redis Head",
     "description": "Redis Manager.",
-    "version": "0.3",
+    "version": "1.0",
     "icons": {
         "16": "resources/icons/redis-head-16.png",
         "128": "resources/icons/redis-head-128.png"

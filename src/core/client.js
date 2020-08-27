@@ -16,7 +16,9 @@ const
 
 var 
 	receivedAllData = '',
-	isEndReceive = false;
+	isEndReceive = false,
+	textEncoder = new TextEncoder(),
+	textDecoder = new TextDecoder();
 
 var redis = function (host, port, password) {
 	this.host = host,
@@ -58,9 +60,6 @@ var redis = function (host, port, password) {
 			// check is received all
 			if (isEndReceive) {
 				callBack(parseReply(receivedAllData));
-				// this.tcpSocket.disconnect(function () {
-				// 	console.log('disconnect')
-				// });
 
 				// reset receive flag
 				isEndReceive = false;
@@ -128,20 +127,22 @@ var redis = function (host, port, password) {
 	this.exec = function (teminal, isConnect) {
 		if (isConnect) {
 			console.log("teminal exec =>", teminal);
-			var redisProtocolArray = encode(teminal);
-			var buf = str2ab(redisProtocolArray.join(JS_EOL) + JS_EOL);
-	
-			this.tcpSocket.send(buf, function (sentResult) {
-				if (sentResult.resultCode != 0) {
-					console.log('send err', sentResult);
-				}
+			var buf = textEncoder.encode(teminal+JS_EOL);
+			
+			this.tcpSocket.pause(false, () => {
+				this.tcpSocket.send(buf, function (sentResult) {
+					console.log("send callback =>", sentResult);
+					if (sentResult.resultCode != 0) {
+						console.log('send err', sentResult);
+					}
+				});
 			});
+			
 			return;
 		}
 		this.connect(() => {
 			console.log("teminal exec =>", teminal);
-			var redisProtocolArray = encode(teminal);
-			var buf = str2ab(redisProtocolArray.join(JS_EOL) + JS_EOL);
+			var buf = textEncoder.encode(teminal+JS_EOL);
 	
 			this.tcpSocket.send(buf, function (sentResult) {
 				if (sentResult.resultCode != 0) {
@@ -159,11 +160,13 @@ var redis = function (host, port, password) {
 }
 
 function ab2str(buf) {
-	return String.fromCharCode.apply(null, new Int8Array(buf));
+	return textDecoder.decode(new Int8Array(buf));
 }
+
+// redis terminal to array buffer
 function str2ab(str) {
-	var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
-	var bufView = new Int8Array(buf);
+	var buf = new ArrayBuffer(str.length*2);
+	var bufView = new Int16Array(buf);
 	for (var i = 0, strLen = str.length; i < strLen; i++) {
 		bufView[i] = str.charCodeAt(i);
 	}

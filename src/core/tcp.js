@@ -22,6 +22,8 @@ function tcp() {
             console.log("tcp connected");
             callback();
         }.bind(this));
+
+
     }.bind(this),
 
     this.send = function (data, onSentCallback) {
@@ -33,9 +35,10 @@ function tcp() {
 
     this.onReceive = function (callback) {
         _tcp.onReceive.addListener(function (info) {
-            console.log("tcp onReceive =>", info)
-            this.receive(info);
+            
+            console.log("tcp onReceive =>", info, this.socketId)
             if (info.socketId == this.socketId) {
+                this.pause(false);
                 callback(info);
             }
         }.bind(this));
@@ -52,14 +55,9 @@ function tcp() {
         }.bind(this));
     }.bind(this),
 
-    this.receive = function (info) {
-        console.log('Received data.');
-    },
-
     this.pause = function (isPaused, callback) {
-        _tcp.setPaused(this.socketId, isPaused, function () {
-            console.log("isPaused");
-        });
+        console.log("isPaused", this.socketId, isPaused);
+        _tcp.setPaused(this.socketId, isPaused, callback);
     }.bind(this),
 
     this.keepAlive = function (enable, delay, callback) {
