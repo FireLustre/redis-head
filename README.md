@@ -14,7 +14,9 @@ It is a chrome extension application for Redis.
 
 [![https://chrome.google.com/webstore/detail/json-viewer/gbmdgpbipfallnflgajpaliibnhdgobh](https://raw.githubusercontent.com/tulios/json-viewer/master/tryitnow.png)](https://chrome.google.com/webstore/detail/json-viewer/gbmdgpbipfallnflgajpaliibnhdgobh)
 
-
+## TODO
+- Make beautifaul UI
+- Publish in the Chrome Web Store
 
 ## License
 
